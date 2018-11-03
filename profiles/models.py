@@ -2,10 +2,9 @@ import os
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
 from django.db.models import signals
+from django.dispatch import receiver
 from django.urls import reverse
-from urllib.parse import urljoin
 from django.contrib.sites.models import Site
-from django.core.exceptions import ObjectDoesNotExist
 from .tasks import LoadUserProject
 
 
@@ -17,6 +16,8 @@ class Project(models.Model):
     This table keeps track of the blank projects that are provided to the app
     via the profile downloads.  Note that the path field defines where the file
     is stored on the mobile device.
+    Important:  the uploadurl field tells the Geopaparazzi app where to post userproject files, this should be left
+    blank in most cases, the save() function will fill in the appropriate URL.
 
     """
     path = models.CharField(max_length=100, blank=True, default='')
@@ -44,6 +45,16 @@ class Project(models.Model):
         ordering = ('path', '-modifieddate',)
 
 
+@receiver(signals.post_delete, sender=Project)
+def project_post_delete(sender, instance, **kwargs):
+    """
+    Deletes files from filesystem
+    when corresponding `Project` object is deleted.
+    TODO:  test that this works when files are stored on remote server (S3)
+    """
+    instance.url.delete(False)
+
+
 def userproject_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/<owner>/userprojects/<filename>
     return '{0}/userprojects/{1}'.format(instance.owner, os.path.basename(filename))
@@ -65,12 +76,23 @@ class UserProject(models.Model):
 
 
 # Add a post save process for userprojects to unpack the data after upload
+@receiver(signals.post_save, sender=UserProject)
 def userproject_post_save(sender, instance, signal, *args, **kwargs):
     LoadUserProject.delay(instance.document.name, instance.owner.id)
 
 
 # register the post save process as a signal ref:  https://docs.djangoproject.com/en/2.1/topics/signals/
-signals.post_save.connect(userproject_post_save, sender=UserProject)
+# signals.post_save.connect(userproject_post_save, sender=UserProject)
+
+
+@receiver(signals.post_delete, sender=UserProject)
+def userproject_post_delete(sender, instance, **kwargs):
+    """
+    Deletes files from filesystem
+    when corresponding `UserProject` object is deleted.
+    TODO:  test that this works when files are stored on remote server (S3)
+    """
+    instance.document.delete(False)
 
 
 def tag_directory_path(instance, filename):
@@ -101,6 +123,16 @@ class Tag(models.Model):
         ordering = ('path', '-modifieddate',)
 
 
+@receiver(signals.post_delete, sender=Tag)
+def tag_post_delete(sender, instance, **kwargs):
+    """
+    Deletes files from filesystem
+    when corresponding `Tag` object is deleted.
+    TODO:  test that this works when files are stored on remote server (S3)
+    """
+    instance.url.delete(False)
+
+
 class Basemap(models.Model):
     """ Basemap files are tiled backdrops
     """
@@ -118,6 +150,16 @@ class Basemap(models.Model):
 
     class Meta:
         ordering = ('path', '-modifieddate',)
+
+
+@receiver(signals.post_delete, sender=Basemap)
+def basemap_post_delete(sender, instance, **kwargs):
+    """
+    Deletes files from filesystem
+    when corresponding `Basemap` object is deleted.
+    TODO:  test that this works when files are stored on remote server (S3)
+    """
+    instance.url.delete(False)
 
 
 class Spatialitedbs(models.Model):
@@ -143,6 +185,16 @@ class Spatialitedbs(models.Model):
         ordering = ('path', '-modifieddate',)
 
 
+@receiver(signals.post_delete, sender=Spatialitedbs)
+def spatialitedbs_post_delete(sender, instance, **kwargs):
+    """
+    Deletes files from filesystem
+    when corresponding `Spatialitedbs` object is deleted.
+    TODO:  test that this works when files are stored on remote server (S3)
+    """
+    instance.url.delete(False)
+
+
 class Otherfiles(models.Model):
     """ This table tracks any other type of content, like images or documents that can be downloaded to the app
     """
@@ -161,6 +213,16 @@ class Otherfiles(models.Model):
 
     class Meta:
         ordering = ('path', '-modifieddate',)
+
+
+@receiver(signals.post_delete, sender=Otherfiles)
+def otherfiles_post_delete(sender, instance, **kwargs):
+    """
+    Deletes files from filesystem
+    when corresponding `Otherfiles` object is deleted.
+    TODO:  test that this works when files are stored on remote server (S3)
+    """
+    instance.url.delete(False)
 
 
 class Profile(models.Model):

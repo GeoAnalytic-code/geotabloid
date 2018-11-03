@@ -3,6 +3,9 @@ import json
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import JSONField
 from django.utils.safestring import mark_safe
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+
 
 # Geopaparazzi user projects data
 
@@ -47,6 +50,11 @@ class Note(PointFeature):
                     fs = fs + fi['value'] + "</p>"
         return fs
 
+    class Meta:
+        ordering = ['-timestamp']
+        unique_together = (("timestamp", "owner"),)
+
+
 class ImageNote(PointFeature):
     """ an image, sketch or map note
     """
@@ -60,6 +68,22 @@ class ImageNote(PointFeature):
 
     thumbnail_tag.short_description = 'Thumbnail'
 
+    class Meta:
+        ordering = ['-timestamp']
+        unique_together = (("timestamp", "owner"),)
+
+
+@receiver(post_delete, sender=ImageNote)
+def imagenote_post_delete(sender, instance, **kwargs):
+    """
+    Deletes files from filesystem
+    when corresponding `ImageNote` object is deleted.
+    TODO:  test that this works when files are stored on remote server (S3)
+    """
+    instance.image.delete(False)
+    instance.thumbnail.delete(False)
+
+
 class TrackFeature(models.Model):
     """ a GPS track with optional text
     linestring is stored as lat,lon - ht is ignored because the geodjango admin widgets don't support it
@@ -70,7 +94,12 @@ class TrackFeature(models.Model):
     modifieddate = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey('users.user', to_field='id', on_delete=models.CASCADE)
     text = models.TextField(null=True, blank=True, verbose_name="Text note")
-    lengthm = models.DecimalField(max_digits=12, decimal_places=3, null=True, blank=True, verbose_name="Track length in metres")
+    lengthm = models.DecimalField(max_digits=12, decimal_places=3, null=True, blank=True,
+                                  verbose_name="Track length in metres")
 
     def __str__(self):
         return '{0} {1}'.format(self.owner, self.timestamp_start)
+
+    class Meta:
+        ordering = ['-timestamp_start']
+        unique_together = (("timestamp_start", "owner"),)
