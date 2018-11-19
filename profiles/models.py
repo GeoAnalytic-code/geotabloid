@@ -1,6 +1,7 @@
 import os
 from django.contrib.gis.db import models
 from django.contrib.postgres.fields import ArrayField
+# from django.db import transaction
 from django.db.models import signals
 from django.dispatch import receiver
 from django.urls import reverse
@@ -78,6 +79,15 @@ class UserProject(models.Model):
 # Add a post save process for userprojects to unpack the data after upload
 @receiver(signals.post_save, sender=UserProject)
 def userproject_post_save(sender, instance, signal, *args, **kwargs):
+    """
+    When a userproject has been uploaded, call the LoadUserProject method as an asynchronous celery task
+    Loads the notes, images, and tracks into the gp_projects table
+    :param sender: UserProject class
+    :param instance: the uploaded instance
+    :param signal: post_save
+    :param args:
+    :param kwargs:
+    """
     LoadUserProject.delay(instance.document.name, instance.owner.id)
 
 

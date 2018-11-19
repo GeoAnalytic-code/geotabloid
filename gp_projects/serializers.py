@@ -1,10 +1,12 @@
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from rest_framework import serializers
+from rest_framework_gis.pagination import GeoJsonPagination
 from .models import TrackFeature, ImageNote, Note
 
 
 class TrackFeatureSerializer(GeoFeatureModelSerializer):
     """ A class to serialize locations as GeoJSON compatible data """
+    pagination_class = None
 
     class Meta:
         model = TrackFeature
@@ -17,11 +19,13 @@ class TrackFeatureSerializer(GeoFeatureModelSerializer):
 
 class ImageNoteSerializer(GeoFeatureModelSerializer):
     """ A class to serialize ImageNotes as geojson """
+    pagination_class = GeoJsonPagination
 
     class Meta:
         model = ImageNote
         geo_field = "location"
-        fields = ('id', 'location', 'lat', 'lon', 'altitude', 'azimuth', 'timestamp', 'owner', 'note')
+        fields = ('id', 'location', 'lat', 'lon', 'altitude', 'azimuth',
+                  'timestamp', 'owner', 'note', 'image', 'thumbnail')
 
 
 class NGImageNoteSerializer(serializers.ModelSerializer):
@@ -55,6 +59,7 @@ class ImageUrlField(serializers.RelatedField):
 
 class NoteSerializer(GeoFeatureModelSerializer):
     """ A class to serialize Notes as geojson """
+    pagination_class = None
 
     class Meta:
         model = Note
