@@ -179,7 +179,7 @@ class UserMap(models.Model):
     tracks = models.ManyToManyField(TrackFeature, blank=True)
     notes = models.ManyToManyField(Note, blank=True)
     images = models.ManyToManyField(ImageNote, blank=True)
-    tilelayer = models.ForeignKey(TileLayer, on_delete=models.DO_NOTHING)
+    tilelayer = models.ManyToManyField(TileLayer)
 
     def track_json(self):
         return reverse('track-json-usermap',  kwargs={'pk': self.pk})
