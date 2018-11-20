@@ -25,7 +25,7 @@ class ImageNoteSerializer(GeoFeatureModelSerializer):
         model = ImageNote
         geo_field = "location"
         fields = ('id', 'location', 'lat', 'lon', 'altitude', 'azimuth',
-                  'timestamp', 'owner', 'note', 'image', 'thumbnail')
+                  'timestamp', 'owner', 'note', 'image', 'webimg', 'thumbnail')
 
 
 class NGImageNoteSerializer(serializers.ModelSerializer):
@@ -34,7 +34,8 @@ class NGImageNoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ImageNote
-        fields = ('id', 'lat', 'lon', 'altitude', 'azimuth', 'timestamp', 'owner', 'note', 'image', 'thumbnail')
+        fields = ('id', 'lat', 'lon', 'altitude', 'azimuth', 'timestamp',
+                  'owner', 'note', 'image', 'webimg', 'thumbnail')
 
 
 class NGTrackFeatureSerializer(serializers.ModelSerializer):

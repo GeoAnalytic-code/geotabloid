@@ -20,7 +20,7 @@ def geojsonImageFeed(request, pk):
     """ returns all of the ImageNotes linked to a UserMap as geoJSON
      """
     usermap = get_object_or_404(UserMap, pk=pk)
-    return HttpResponse(serialize('geojson', usermap.images.all(), fields=('thumbnail', 'location',)))
+    return HttpResponse(serialize('geojson', usermap.images.all(), fields=('webimg', 'location',)))
 
 
 class TrackList(APIView):

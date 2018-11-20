@@ -67,6 +67,7 @@ class ImageNote(PointFeature):
     """
     image = models.ImageField(upload_to=userdata_directory_path)
     thumbnail = models.ImageField(upload_to=userdata_directory_path)
+    webimg = models.ImageField(upload_to=userdata_directory_path)
     azimuth = models.DecimalField(max_digits=12, decimal_places=3, null=True, blank=True)
     note = models.ForeignKey(Note, related_name='images', on_delete=models.CASCADE)
 
@@ -75,6 +76,11 @@ class ImageNote(PointFeature):
         return mark_safe('<img src="%s" width="256" />' % self.thumbnail.url)
 
     thumbnail_tag.short_description = 'Thumbnail'
+
+    def webimg_tag(self):
+        return mark_safe('<img src="%s" width="640>' % self.webimg.url)
+
+    webimg_tag.short_description = 'Web suitable image'
 
     def url(self):
         return reverse('imagenote-detail', args=[self.pk])

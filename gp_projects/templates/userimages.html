@@ -70,12 +70,13 @@
                       return '<img class="img-fluid" style="height:40px"  src="'+data+'" />';
                   }},
                   {"data": "image", "visible": false},
+                  {"data": "webimg", "visible": false},
               ]
           });
 
       table.on( 'select', function ( e, dt, type, indexes ) {
           if ( type === 'row' ) {
-              var img = table.rows( indexes ).data().pluck( 'image' );
+              var img = table.rows( indexes ).data().pluck( 'webimg' );
               $('#image').html('<img class="img-fluid"  style="width=100%; max-height:400px" src=' +  img[0] + ' >');
               var lati = table.rows( indexes ).data().pluck( 'lat' );
               var long = table.rows( indexes ).data().pluck( 'lon' );

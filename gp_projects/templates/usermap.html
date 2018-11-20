@@ -63,12 +63,18 @@
     fillOpacity: 0.5,
     radius: 10
   });
+  // specify popup options
+  var customOptions =
+      {
+      'maxWidth': '500',
+      'className' : 'custom'
+      };
 
   function onEachFeature(feature, layer) {
-      // does this feature have a property named thumbnail?
-      if (feature.properties && feature.properties.thumbnail) {
-        popup = "<img src=" + {% get_media_prefix %} + feature.properties.thumbnail + ">"
-          layer.bindPopup(popup);
+      // does this feature have a property named webimg?
+      if (feature.properties && feature.properties.webimg) {
+        popup = "<img src=" + {% get_media_prefix %} + feature.properties.webimg + " width='400px'>"
+        layer.bindPopup(popup, customOptions);
       }
   }
 

@@ -129,6 +129,15 @@ def LoadUserProject(userproject_file, ownerid):
                 # cases: image don't have getexif
                 pass
 
+            # create a web suitable resized image here
+            # TODO:  put the size and save options in the settings file
+            webimg_filename = 'web_{0}'.format(local_filename)
+            image = Image.open(local_filename)
+            websize = 480, 480
+            image.thumbnail(websize)
+            image.save(webimg_filename, format='JPEG', optimize=True, quality=85)
+            image.close()
+
             qf = open(local_filename, 'rb')
             imgrcd.image = File(qf)
             # the thumbnail - also should be placed in a temp directory
@@ -137,7 +146,9 @@ def LoadUserProject(userproject_file, ownerid):
             with open(thmname, 'wb') as output_file:
                 output_file.write(blob)
             qt = open(thmname, 'rb')
+            qw = open(webimg_filename, 'rb')
             imgrcd.thumbnail = File(qt)
+            imgrcd.webimg = File(qw)
             # save the newly created image record
             try:
                 with transaction.atomic():
@@ -154,6 +165,12 @@ def LoadUserProject(userproject_file, ownerid):
             qt.close()
             try:
                 os.remove(thmname)
+            except OSError as err:
+                pass
+
+            qw.close()
+            try:
+                os.remove(webimg_filename)
             except OSError as err:
                 pass
 
