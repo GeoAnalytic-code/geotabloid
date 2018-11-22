@@ -1,12 +1,13 @@
 from rest_framework import generics, permissions
 from rest_framework.views import APIView
 from .models import TrackFeature, ImageNote, Note, UserMap
-from .serializers import TrackFeatureSerializer, ImageNoteSerializer, NGImageNoteSerializer, NGTrackFeatureSerializer, NGNoteSerializer
+from .serializers import TrackFeatureSerializer, ImageNoteSerializer, NGImageNoteSerializer, \
+    NGTrackFeatureSerializer, NGNoteSerializer
 from django.http import HttpResponse
 from django.db.models.functions import TruncDate
 from django.shortcuts import render, get_object_or_404
 from django.core.serializers import serialize
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 
 
 # Geojson serializers
@@ -115,8 +116,16 @@ def UserView(request):
     note_list = Note.objects.filter(owner=request.user)
     image_list = ImageNote.objects.filter(owner=request.user)
     track_list = TrackFeature.objects.filter(owner=request.user)
-    context = {'date_list': date_list, 'note_list': note_list, 'image_list': image_list, 'track_list': track_list}
+    map_list = UserMap.objects.filter(owner=request.user)
+    context = {'date_list': date_list, 'note_list': note_list, 'image_list': image_list,
+               'track_list': track_list, 'map_list': map_list}
     return render(request, 'userview.html', context=context)
+
+
+class UserMapList(ListView):
+    """ a list of user maps """
+    model = UserMap
+    template_name = "usermaps.html"
 
 class UserMapView(TemplateView):
     """ a view to render a user map """

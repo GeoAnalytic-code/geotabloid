@@ -33,7 +33,6 @@
 
 {% block javascript %}
   {% load static %}
-{#  var data-media-url="{% get_media_prefix %}"#}
   <script src="//code.jquery.com/jquery-1.12.4.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
           integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
@@ -43,11 +42,7 @@
         crossorigin=""></script>
   <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
   <script>
-  {#var osmTiles = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {#}
-  {#  attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',#}
-  {#  maxZoom: 19,#}
-  {#  });#}
-  {#var osmTiles = {{ themap.tilelayer.js_create }}#}
+
   var baselayers = {};
     {% for tilelayer in themap.tilelayer.all %}
       lyr_{{ forloop.counter }} = {{ tilelayer.js_create }}
@@ -56,13 +51,8 @@
   var lon = {{ themap.center.x }};
   var lat = {{ themap.center.y }};
   var zoom = {{ themap.zoom }};
-  var map, layer;
-  var circle = L.circleMarker([lat, lon], {
-    color: 'red',
-    fillColor: '#f03',
-    fillOpacity: 0.5,
-    radius: 10
-  });
+  var map;
+
   // specify popup options
   var customOptions =
       {

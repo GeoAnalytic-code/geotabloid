@@ -31,8 +31,8 @@ urlpatterns = [
     url(r'^userimages', TemplateView.as_view(template_name="userimages.html"), name='userimages'),
     url(r'^usernotes', TemplateView.as_view(template_name="usernotes.html"), name='usernotes'),
     url(r'^userview/$', views.UserView, name='user-view'),
+    url(r'^usermaplist/$', views.UserMapList.as_view(), name='usermaplist'),
     url(r'^usermap/(?P<pk>[0-9]+)$', views.UserMapView.as_view(), name='user-map'),
-    # url(r'^usermap/$', TemplateView.as_view(template_name='usermap.html'), name='usermap'),
 ]
 
 #router = DefaultRouter()
