@@ -15,6 +15,8 @@ A demonstration server for Geopaparazzi_ users.  Using Django_, Django-REST-Fram
 
 :License: MIT
 
+.. image:: ./img/mytracks.gif
+
 Getting Started With A Local Server
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -203,7 +205,7 @@ Once you have completed the upload, the server will index and process the data w
 .. image:: ./img/userprofile.png
 User info and recent photo uploads are shown on the My Profile page.
 
-.. image:: ./img/mytracks.gif
+.. image:: ./img/tracks.png
 A selectable list of tracks and a map display is shown on the My Tracks page.
 
 .. image:: ./img/usernotes.png
