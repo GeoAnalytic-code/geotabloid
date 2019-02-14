@@ -201,18 +201,29 @@ The only thing that you need to adjust is the string that you enter in the Cloud
 Now, go ahead and use Geopaparazzi to collect images, notes and tracks.  When you are done, upload the cloud profile data (note your phone must be on the same network as your server).
 Once you have completed the upload, the server will index and process the data which is then available for you to view and download.  See the example screenshots below:
 
+Screenshots
+^^^^^^^^^^^
+
+User info and recent photo uploads are shown on the My Profile page.
+--------------------------------------------------------------------
 
 .. image:: ./img/userprofile.png
-User info and recent photo uploads are shown on the My Profile page.
+
+A selectable list of tracks and a map display is shown on the My Tracks page.
+-----------------------------------------------------------------------------
 
 .. image:: ./img/tracks.png
-A selectable list of tracks and a map display is shown on the My Tracks page.
+
+Similar lists and maps are shown on the My Notes and My Images pages.
+---------------------------------------------------------------------
 
 .. image:: ./img/usernotes.png
-Similar lists and maps are shown on the My Notes and My Images pages.
+
+A form builder app is supplied to allow you to create Geopaparazzi forms (tags)
+-------------------------------------------------------------------------------
 
 .. image:: ./img/formbuilder.png
-A form builder app is supplied to allow you to create Geopaparazzi forms (tags)
+
 
 
 
