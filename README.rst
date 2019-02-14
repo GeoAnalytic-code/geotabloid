@@ -36,7 +36,7 @@ Clone the repo and build the docker containers
 
 ::
 
-    $ git clone https://github.com/geoanalytic/geotabloid.git
+    $ git clone https://github.com/GeoAnalytic-code/geotabloid.git
     $ cd geotabloid
     $ docker-compose -f local.yml build
     $ docker-compose -f local.yml up -d
