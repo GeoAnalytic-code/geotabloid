@@ -43,7 +43,14 @@ Clone the repo and build the docker containers
     $ docker-compose -f local.yml ps
 
 Depending on how you have installed docker, you may need to preface the docker-compose commands with sudo.
-The ps command should result in a report like this.
+For example, if you get:
+::
+
+    ERROR: couldn't connect to Docker daemon at http+docker://localhost - is it running?
+
+try prefacing the docker-compose commands with sudo.
+
+The ps command should result in a report like this:
 
 ::
 
