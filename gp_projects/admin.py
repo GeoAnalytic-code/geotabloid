@@ -1,5 +1,5 @@
 from django.contrib.gis import admin
-from .models import Note, ImageNote, TrackFeature, TileLayer, UserMap
+from .models import Note, ImageNote, TrackFeature #, TileLayer, UserMap
 
 admin.site.register(Note, admin.OSMGeoAdmin)
 
@@ -12,5 +12,5 @@ class ImageNoteAdmin(admin.OSMGeoAdmin):
 
 admin.site.register(ImageNote, ImageNoteAdmin)
 admin.site.register(TrackFeature, admin.OSMGeoAdmin)
-admin.site.register(TileLayer, admin.OSMGeoAdmin)
-admin.site.register(UserMap, admin.OSMGeoAdmin)
+# admin.site.register(TileLayer, admin.OSMGeoAdmin)
+# admin.site.register(UserMap, admin.OSMGeoAdmin)

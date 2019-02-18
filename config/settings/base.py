@@ -279,3 +279,19 @@ REST_FRAMEWORK = {
 
 # turn branding off
 GEO_BRANDING = False
+
+# schedule data cleanup
+CELERY_BEAT_SCHEDULE = {
+ 'clean-up-user-projects-every-day': {
+       'task': 'profiles.tasks.CleanUpOldProjects',
+        # time schedule in seconds
+       'schedule': 86400.0,
+        # arguments passed to the task
+       'args': (0,),
+    },
+    'clean-up-user-data-every-hour': {
+        'task': 'gp_projects.tasks.CleanUpOldData',
+        'schedule': 3600.0,
+        'args': (0,),
+    },
+}

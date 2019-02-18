@@ -1,14 +1,10 @@
 import datetime
 from .models import Note, ImageNote, TrackFeature
-from celery import shared_task
+from geotabloid.taskapp.celery import app
+# from celery import shared_task
 
 
-# @app.on_after_configure.connect
-# def setup_periodic_tasks(sender, **kwargs):
-#     sender.add_periodic_task(60, CleanUpOldData(), name='remove gp_projects data every 60 seconds')
-
-
-@shared_task
+@app.task
 def CleanUpOldData(interval):
     """ this task should be run on a schedule (daily?)
     :param interval: number of days the data will be retained
@@ -25,3 +21,6 @@ def CleanUpOldData(interval):
     cutnotes.delete()  # deleting the notes should automatically delete the imagenotes
     cuttracks.delete()
 
+# @app.on_after_configure.connect
+# def setup_periodic_tasks(sender, **kwargs):
+#     sender.add_periodic_task(60.0, CleanUpOldData.s(0))

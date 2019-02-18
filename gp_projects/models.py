@@ -99,6 +99,7 @@ def imagenote_post_delete(sender, instance, **kwargs):
     """
     instance.image.delete(False)
     instance.thumbnail.delete(False)
+    instance.webimg.delete(False)
 
 
 class TrackFeature(models.Model):
