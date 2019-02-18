@@ -135,7 +135,7 @@ def LoadUserProject(userproject_file, ownerid):
             image = Image.open(local_filename)
             websize = 480, 480
             image.thumbnail(websize)
-            image.save(webimg_filename, format='JPEG', optimize=True, quality=85)
+            image.save(webimg_filename, optimize=True, quality=85)
             image.close()
 
             qf = open(local_filename, 'rb')
