@@ -224,6 +224,15 @@ A form builder app is supplied to allow you to create Geopaparazzi forms (tags)
 
 .. image:: ./img/formbuilder.png
 
+Data Cleanup
+^^^^^^^^^^^^
+
+This project was created as a demonstration site for Geopaparazzi users to test out the potential of the app and website.  In order to ensure the server does not get filled up with data, there is a celerybeat_ schedule that deletes any data over one week old.
+You can disable or adjust this schedule by editing the CELERY_BEAT_SCHEDULE structure found in /config/settings/base.py
+
+.. _celerybeat: http://docs.celeryproject.org/en/latest/userguide/periodic-tasks.html
+
+
 
 
 

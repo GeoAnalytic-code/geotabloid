@@ -1,12 +1,13 @@
 # Create your tasks here
 from __future__ import absolute_import, unicode_literals
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 # from celery import shared_task
 from geotabloid.taskapp.celery import app
 import sqlite3
 import tempfile
 from PIL import Image, ExifTags
+from django.db import IntegrityError, transaction
 from django.contrib.auth import get_user_model
 from gp_projects.models import ImageNote, Note, TrackFeature
 from django.contrib.gis.geos import Point, LineString
@@ -60,20 +61,30 @@ def LoadUserProject(userproject_file, ownerid):
             pt_dict = dict(pt)
             plist.append(Point(pt_dict['lon'], pt_dict['lat']))
         rcd.linestring = LineString(plist)
-        rcd.save()
+        try:
+            with transaction.atomic():
+                rcd.save()
+        except IntegrityError:  # if the track is already in the database, catch the error and continue
+            pass
         d.close()
 
     # import notes and images together in order to preserve relationships
     for nt in c.execute('SELECT * FROM notes;'):
         nt_dict = dict(nt)
         rcd = Note(owner=owner, text= nt_dict['text'], form = nt_dict['form'])
-        rcd.timestamp = datetime.utcfromtimestamp(nt_dict['ts']/1000).replace(tzinfo=timezone.utc)
+        ts = datetime.utcfromtimestamp(nt_dict['ts']/1000).replace(tzinfo=timezone.utc)
+        rcd.timestamp = ts
         rcd.description = nt_dict['description']
         rcd.lat = nt_dict['lat']
         rcd.lon = nt_dict['lon']
         rcd.location = Point(rcd.lon, rcd.lat)
         rcd.altitude = nt_dict['altim']
-        rcd.save()  # save the Note here so that we can refer to it when creating ImageNote records
+        try:
+            with transaction.atomic():
+                rcd.save()  # save the Note here so that we can refer to it when creating ImageNote records
+        except IntegrityError:  # if the Note is already in the database, catch the error and continue
+            break
+
         d = conn.cursor()
         # Import all Images linked to the current Note
         # Design Note:  presumes ImageNote records are _always_ referenced by a Note
@@ -95,7 +106,7 @@ def LoadUserProject(userproject_file, ownerid):
             blob = img_dict['data']
             local_filename = im_dict['text']
             with open(local_filename, 'wb') as output_file:
-                output_file.write(blob)
+                output_file.write(blob)  # deleting the notes should automatically delete the imagenotes
 
             # Rotate the image if an orientation tag is available
             try:
@@ -118,6 +129,15 @@ def LoadUserProject(userproject_file, ownerid):
                 # cases: image don't have getexif
                 pass
 
+            # create a web suitable resized image here
+            # TODO:  put the size and save options in the settings file
+            webimg_filename = 'web_{0}'.format(local_filename)
+            image = Image.open(local_filename)
+            websize = 480, 480
+            image.thumbnail(websize)
+            image.save(webimg_filename, optimize=True, quality=85)
+            image.close()
+
             qf = open(local_filename, 'rb')
             imgrcd.image = File(qf)
             # the thumbnail - also should be placed in a temp directory
@@ -126,9 +146,15 @@ def LoadUserProject(userproject_file, ownerid):
             with open(thmname, 'wb') as output_file:
                 output_file.write(blob)
             qt = open(thmname, 'rb')
+            qw = open(webimg_filename, 'rb')
             imgrcd.thumbnail = File(qt)
+            imgrcd.webimg = File(qw)
             # save the newly created image record
-            imgrcd.save()
+            try:
+                with transaction.atomic():
+                    imgrcd.save()
+            except IntegrityError:  # if the image is already in the database, catch the error and continue
+                pass
             # clean up temporary image files
             qf.close()
             try:
@@ -142,10 +168,32 @@ def LoadUserProject(userproject_file, ownerid):
             except OSError as err:
                 pass
 
+            qw.close()
+            try:
+                os.remove(webimg_filename)
+            except OSError as err:
+                pass
+
     # clean up the temporary sqlite3 file
     userproject.close()
     try:
         os.remove(userproject.name)
     except OSError as err:
         pass
+
+
+@app.task
+def CleanUpOldProjects(interval):
+    """ this task should be run on a schedule (daily?)
+    :param interval: number of days the data will be retained
+    :rtype: None
+    """
+    from profiles.models import UserProject # import here to avoid circular dependency
+    cutoff = datetime.now(timezone.utc) - timedelta(days=interval)
+
+    print("Clean up projects. pruning data older than {0}".format(cutoff))
+    cut_user_projects = UserProject.objects.filter(modifieddate__lt=cutoff)
+
+    print("Deleting {0} user projects".format(cut_user_projects.count()))
+    cut_user_projects.delete()
 

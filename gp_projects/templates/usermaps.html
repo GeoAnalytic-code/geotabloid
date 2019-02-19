@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Maps</h2>
+    <ul>
+        {% for map in object_list %}
+          <li><a href="{% url 'user-map' map.pk %}"> {{ map.slug }} : {{ map.description }}  :  Sharing - {{ map.get_share_status_display }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock content %}

@@ -2,7 +2,8 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
 from ..models import Note, ImageNote, TrackFeature
-from ..serializers import NGImageNoteSerializer, NGNoteSerializer, NGTrackFeatureSerializer, NGTrackFeatureSerializer, NoteSerializer
+from ..serializers import NGImageNoteSerializer, NGNoteSerializer, \
+    NGTrackFeatureSerializer, NGTrackFeatureSerializer, NoteSerializer
 from django.core.exceptions import ObjectDoesNotExist
 import tempfile
 from django.core.files.uploadedfile import SimpleUploadedFile

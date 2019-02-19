@@ -26,6 +26,7 @@
           Track count:  {{ track_list|length }}<br>
           Note count:  {{ note_list|length }}<br>
           Image count:  {{ image_list|length }}<br>
+          Map count:  {{ map_list|length }}<br>
           <a class="btn btn-outline-info btn-sm" href="{% url 'users:detail' request.user.username  %}" role="button">My Info</a>
         </p>
 			  <p class="card-text text-right">
@@ -49,7 +50,7 @@
 		  </div>
 {% for image in image_list %}
       <div class="card card-pin text-center">
-			<img class="card-img" src="{{ image.image.url }}" alt="Card image">
+			<img class="card-img" src="{{ image.webimg.url }}" alt="Card image">
 			  <div class="overlay">
 				<h3 class="card-title title">{{ image.note.text }}</h3>
         <h6 class="card-title">{{ image.timestamp }}</h6>
