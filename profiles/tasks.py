@@ -73,6 +73,7 @@ def LoadUserProject(userproject_file, ownerid):
         nt_dict = dict(nt)
         rcd = Note(owner=owner, text= nt_dict['text'], form = nt_dict['form'])
         ts = datetime.utcfromtimestamp(nt_dict['ts']/1000).replace(tzinfo=timezone.utc)
+        print("processing note at {0}".format(ts))
         rcd.timestamp = ts
         rcd.description = nt_dict['description']
         rcd.lat = nt_dict['lat']
@@ -83,7 +84,8 @@ def LoadUserProject(userproject_file, ownerid):
             with transaction.atomic():
                 rcd.save()  # save the Note here so that we can refer to it when creating ImageNote records
         except IntegrityError:  # if the Note is already in the database, catch the error and continue
-            break
+            print("Error saving note - already exists")
+            continue
 
         d = conn.cursor()
         # Import all Images linked to the current Note
@@ -110,7 +112,9 @@ def LoadUserProject(userproject_file, ownerid):
 
             # Rotate the image if an orientation tag is available
             try:
+                print("opening image file {0}".format(local_filename))
                 image = Image.open(local_filename)
+                # this is a dumb way to find an integer from a dict but it works...
                 for orientation in ExifTags.TAGS.keys():
                     if ExifTags.TAGS[orientation] == 'Orientation':
                         break
