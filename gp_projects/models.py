@@ -95,7 +95,6 @@ def imagenote_post_delete(sender, instance, **kwargs):
     """
     Deletes files from filesystem
     when corresponding `ImageNote` object is deleted.
-    TODO:  test that this works when files are stored on remote server (S3)
     """
     instance.image.delete(False)
     instance.thumbnail.delete(False)
