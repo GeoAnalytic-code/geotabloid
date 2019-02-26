@@ -14,6 +14,8 @@ RUN apk update \
   && apk add gettext \
   # https://docs.djangoproject.com/en/dev/ref/django-admin/#dbshell
   && apk add postgresql-client
+  # install postgis to get export capabilities
+#  && apk add postgis --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/ --allow-untrusted
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements /requirements
